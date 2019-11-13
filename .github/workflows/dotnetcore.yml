@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -17,3 +17,9 @@ jobs:
       run: dotnet build ".\RandomShopGen\RandomShopGen.sln" --configuration Debug
     - name: Run tests
       run: dotnet test ".\RandomShopGen\RandomShopGen.sln"
+    - name: Discord notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: 'The project has been deployed.'
