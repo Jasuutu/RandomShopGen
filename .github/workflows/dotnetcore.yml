@@ -14,6 +14,6 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: Build with dotnet
-      run: dotnet build .src/RandomShopGen.sln --configuration Debug
+      run: dotnet build --configuration Debug
     - name: Run tests
-      run: dotnet test .src/RandomShopGen.sln
+      run: dotnet test
