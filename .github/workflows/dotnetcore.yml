@@ -17,9 +17,17 @@ jobs:
       run: dotnet build ".\RandomShopGen\RandomShopGen.sln" --configuration Debug
     - name: Run tests
       run: dotnet test ".\RandomShopGen\RandomShopGen.sln"
-    - name: Discord notification
+    - name: Discord success notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
+      if: success()
       with:
-        args: 'The project has been deployed.'
+        args: join(github.event_name, 'passed build and test')
+    - name: Discord fail notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      if: failure()
+      with:
+        args: join(github.event_name, 'failed build and test')
