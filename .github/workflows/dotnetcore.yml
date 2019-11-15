@@ -23,11 +23,11 @@ jobs:
       uses: Ilshidur/action-discord@master
       if: success()
       with:
-        args: ${{ github.event_name }} passed build and test
+        args: ${{ github.event_name }} ${{ github.sha }} passed build and test
     - name: Discord fail notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       if: failure()
       with:
-        args: ${{ github.event_name }} failed build and test
+        args: ${{ github.event_name }} ${{ github.sha }} failed build and test
