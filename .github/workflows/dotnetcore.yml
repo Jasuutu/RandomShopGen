@@ -1,6 +1,16 @@
 name: .NET Core
 
-on: [push]
+on: 
+  pull_request:
+    branches:
+      - master        # only run pull request builds against master branch
+    
+    tags-ignore:
+      - ignore        # ignore tag used to stop useless runs.
+  
+  push:
+    tags:
+      - run tests     # Used as a catch all in case I want to run tests on something that isn't a pull request.
 
 jobs:
   build:
@@ -23,11 +33,11 @@ jobs:
       uses: Ilshidur/action-discord@master
       if: success()
       with:
-        args: ${{ github.event_name }} ${{ github.sha }} passed build and test
+        args: ${{ github.event_name }} ${{ github.sha }} on branch ${{ github.ref }} passed build and test
     - name: Discord fail notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       if: failure()
       with:
-        args: ${{ github.event_name }} ${{ github.sha }} failed build and test
+        args: ${{ github.event_name }} ${{ github.sha }} on branch ${{ github.ref }} failed build and test
