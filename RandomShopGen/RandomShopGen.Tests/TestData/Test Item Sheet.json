@@ -1,0 +1,44 @@
+{
+  "Items": {
+    "Item 1": {
+      "Name": "Item 1",
+      "Value": 100
+    },
+    "Item 2": {
+      "Name": "Item 2",
+      "Value": 200
+    },
+    "Item 3": {
+      "Name": "Item 3",
+      "Value": 300
+    },
+    "Item 4": {
+      "Name": "Item 4",
+      "Value": 400
+    },
+    "Item 5": {
+      "Name": "Item 5",
+      "Value": 500
+    },
+    "Item 6": {
+      "Name": "Item 6",
+      "Value": 600
+    },
+    "Item 7": {
+      "Name": "Item 7",
+      "Value": 700
+    },
+    "Item 8": {
+      "Name": "Item 8",
+      "Value": 800
+    },
+    "Item 9": {
+      "Name": "Item 9",
+      "Value": 900
+    },
+    "Item 10": {
+      "Name": "Item 10",
+      "Value": 1000
+    }
+  }
+}
