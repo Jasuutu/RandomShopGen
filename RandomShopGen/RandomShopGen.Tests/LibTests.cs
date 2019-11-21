@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -74,10 +76,17 @@ namespace RandomShopGen.Tests
         }
 
         [TestMethod]
-        [TestCategory("Shop")]
-        public void ShouldShouldReturnSuccessWhenCreatingItemList()
+        [TestCategory("JsonConversion")]
+        [TestCategory("LocalOnly")]
+        public void ItemExtractorShouldReadTestFileCorrectly()
         {
-            
+            var filePath = @"c:\TestItems.json";
+            var extractor = new ItemsExtractor();
+
+            var itemsList = extractor.ConvertFileToItemsCollection(filePath);
+
+            itemsList.Items.Any().Should().BeTrue();
+            itemsList.Items.FirstOrDefault().Should().NotBeNull();
         }
     }
 }
