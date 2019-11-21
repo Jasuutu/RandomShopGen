@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RandomShopGen.Lib;
+using RandomShopGen.Tests.TestData;
 
 namespace RandomShopGen.Tests
 {
@@ -68,11 +69,35 @@ namespace RandomShopGen.Tests
             var shopGold = 1000;
             
             // Execute
-            var shop = new Shop(shopName, shopGold);
+            var shop = new Shop(shopName, shopGold, ItemData.BasicItemList);
 
             // Assert
             shop.Name.Should().Be("Test Shop");
             shop.Gold.Should().Be(1000);
+            shop.ItemList.Count().Should().Be(2);
+        }
+
+        [TestMethod]
+        [TestCategory("Shop")]
+        public void ShopShouldBeAbleToAddItemToList()
+        {
+            var shop = new Shop("Test Shop", 100, ItemData.BasicItemList);
+            var addedItem = new Item("Item 3", 300);
+
+            shop.AddItemToList(addedItem);
+
+            shop.ItemList.Should().Contain(addedItem);
+        }
+
+        [TestMethod]
+        [TestCategory("Shop")]
+        public void ShopShouldBeAbleToRemoveAnItemFromList()
+        {
+            var shop = new Shop("Test Shop", 100, ItemData.BasicItemList);
+            
+            shop.RemoveItemFromList("Item 1");
+
+            shop.ItemList.Should().NotContain(x => x.Name == "Item 1");
         }
 
         [TestMethod]

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RandomShopGen.Lib.Interfaces;
 
 namespace RandomShopGen.Lib
@@ -9,9 +10,9 @@ namespace RandomShopGen.Lib
         private string name;
         private int gold;
         
-        public Shop(string name, int gold)
+        public Shop(string name, int gold, IEnumerable<Item> items)
         {
-            itemList = new List<Item>();
+            itemList = items.ToList();
             this.name = name;
             this.gold = gold;
         }
@@ -19,17 +20,22 @@ namespace RandomShopGen.Lib
         public string Name => name;
 
         public int Gold => gold;
-        
-        // take formatted data file and create items for itemList
-        public bool CreateItemList(string fileLocation)
+
+        public IEnumerable<Item> ItemList => itemList;
+
+        public void AddItemToList(Item item)
         {
-            return false;
+            itemList.Add(item);
         }
 
-        // create output file for the shop and save to the disk
-        public bool CreateShopFile(string fileLocation)
+        public bool RemoveItemFromList(string itemName)
         {
-            return false;
+            Item itemToRemove = itemList.FirstOrDefault(x => x.Name == itemName);
+
+            if (itemToRemove == null) return false;
+            itemList.Remove(itemToRemove);
+            gold += itemToRemove.Value;
+            return true;
         }
     }
 }
