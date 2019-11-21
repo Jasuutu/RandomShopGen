@@ -77,6 +77,7 @@ namespace RandomShopGen.Tests
 
         [TestMethod]
         [TestCategory("JsonConversion")]
+        [TestCategory("LocalOnly")]
         public void ItemExtractorShouldReadTestFileCorrectly()
         {
             var filePath = @"c:\TestItems.json";

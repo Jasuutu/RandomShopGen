@@ -26,7 +26,7 @@ jobs:
     - name: Build with dotnet
       run: dotnet build ".\RandomShopGen\RandomShopGen.sln" --configuration Debug
     - name: Run tests
-      run: dotnet test ".\RandomShopGen\RandomShopGen.sln"
+      run: dotnet test ".\RandomShopGen\RandomShopGen.sln" --filter TestCategory!=LocalOnly
     - name: Discord success notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
