@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using RandomShopGen.Lib;
 using RandomShopGen.Tests.TestData;
 
@@ -13,32 +10,19 @@ namespace RandomShopGen.Tests
     [TestClass]
     public class LibTests
     {
-        private List<Item> items = new List<Item>
-        {
-            new Item("Test1", 1),
-            new Item("Test2", 2),
-            new Item("Test10", 10),
-            new Item("Test Space", 100),
-            new Item("Test3", 3),
-            new Item("Test4", 4)
-        };
+        private const string TestItem = "Test Item";
+        private const string TestShop = "Test Shop";
+        private const int ItemValue100 = 100;
+        private const int ShopGold1000 = 1000;
 
         [TestMethod]
         [TestCategory("Item")]
         public void ItemWillNotThrowExceptionWhenGivenProperValues()
         {
-            // Setup
-            var itemName = "Test Item";
-            var itemValue = 100;
             Item item = null;
 
-            // Execute
-            Action act = () =>
-            {
-                item = new Item(itemName, itemValue);
-            };
+            Action act = () => { item = new Item(TestItem, ItemValue100, ItemType.Usable); };
             
-            // Assert
             act.Should().NotThrow<ArgumentException>("a valid name and valid value were provided.");
             item.Should().NotBeNull("item should have been constructed correctly.");
         }
@@ -47,15 +31,11 @@ namespace RandomShopGen.Tests
         [TestCategory("Item")]
         public void ItemWillThrowExceptionWhenGivenIncorrectValues()
         {
-            // Setup
             var itemName = string.Empty;
-            var itemValue = 100;
             Item item = null;
 
-            // Execute
-            Action act = () => { item = new Item(itemName, itemValue); };
+            Action act = () => { item = new Item(itemName, ItemValue100, ItemType.Usable); };
 
-            // Assert
             act.Should().Throw<ArgumentException>("an empty item name is not a valid value");
             item.Should().BeNull("no item should be created when an invalid value is used.");
         }
@@ -64,16 +44,10 @@ namespace RandomShopGen.Tests
         [TestCategory("Shop")]
         public void ShopShouldHaveNameWhenValidValuesAreProvided()
         {
-            // Setup
-            var shopName = "Test Shop";
-            var shopGold = 1000;
-            
-            // Execute
-            var shop = new Shop(shopName, shopGold, ItemData.BasicItemList);
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
 
-            // Assert
             shop.Name.Should().Be("Test Shop");
-            shop.Gold.Should().Be(1000);
+            shop.Gold.Should().Be(700);
             shop.ItemList.Count().Should().Be(2);
         }
 
@@ -81,23 +55,52 @@ namespace RandomShopGen.Tests
         [TestCategory("Shop")]
         public void ShopShouldBeAbleToAddItemToList()
         {
-            var shop = new Shop("Test Shop", 100, ItemData.BasicItemList);
-            var addedItem = new Item("Item 3", 300);
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
+            var addedItem = new Item("Item 3", ItemValue100, ItemType.Usable);
 
-            shop.AddItemToList(addedItem);
+            bool result = shop.AddItemToList(addedItem);
 
+            result.Should().BeTrue("the action of removing the item should have been successful.");
             shop.ItemList.Should().Contain(addedItem);
+            shop.Gold.Should().Be(600, "the gold value of Item 3 should have been removed from the 700 remaining gold of the shop when Item 3 was added.");
         }
 
         [TestMethod]
         [TestCategory("Shop")]
         public void ShopShouldBeAbleToRemoveAnItemFromList()
         {
-            var shop = new Shop("Test Shop", 100, ItemData.BasicItemList);
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
             
-            shop.RemoveItemFromList("Item 1");
+            bool result = shop.RemoveItemFromList("Item 1");
 
+            result.Should().BeTrue("the action of removing the item should have been successful.");
             shop.ItemList.Should().NotContain(x => x.Name == "Item 1");
+            shop.Gold.Should().Be(800, "the gold value of Item 1 should have been returned to the shops total gold when Item 1 was removed.");
+        }
+
+        [TestMethod]
+        [TestCategory("Shop")]
+        public void ShopShouldReturnFailResultWhenFailingToRemoveAnItem()
+        {
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
+
+            bool result = shop.RemoveItemFromList("No Item");
+
+            result.Should().BeFalse("RemoveItemFromList should not return true when it wasn't able to find an item in it's list of items");
+            shop.ItemList.Count().Should().Be(2, "no item should have been removed from the list since the item wasn't in the list in the first place.");
+        }
+
+        [TestMethod]
+        [TestCategory("Shop")]
+        public void ShopShouldReturnFailResultWhenItemCostsMoreThanItCanAfford()
+        {
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
+            var expensiveItem = new Item(TestItem, 1000, ItemType.Key);
+
+            var result = shop.AddItemToList(expensiveItem);
+
+            result.Should().BeFalse("if the item costs more gold than the shop has available, it can't buy the item");
+            shop.ItemList.Should().NotContain(expensiveItem);
         }
 
         [TestMethod]
