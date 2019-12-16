@@ -7,8 +7,8 @@ namespace RandomShopGen.Tests.TestData
     {
         public static List<Item> BasicItemList = new List<Item>
         {
-            new Item("Test 1", 100),
-            new Item("Test 2", 200)
+            new Item("Test 1", 100, ItemType.Usable),
+            new Item("Test 2", 200, ItemType.Wearable | ItemType.Usable)
         };
     }
 }
