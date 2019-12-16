@@ -3,7 +3,8 @@ name: .NET Core
 on: 
   pull_request:
     branches:
-      - master        # only run pull request builds against master branch
+      - master
+      - Dev
     
     tags-ignore:
       - ignore        # ignore tag used to stop useless runs.
