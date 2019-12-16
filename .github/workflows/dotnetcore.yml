@@ -1,17 +1,6 @@
 name: .NET Core
 
-on: 
-  pull_request:
-    branches:
-      - master
-      - Dev
-    
-    tags-ignore:
-      - ignore        # ignore tag used to stop useless runs.
-  
-  push:
-    tags:
-      - run tests     # Used as a catch all in case I want to run tests on something that isn't a pull request.
+on: [push]
 
 jobs:
   build:
