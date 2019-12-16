@@ -47,7 +47,7 @@ namespace RandomShopGen.Tests
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
 
             shop.Name.Should().Be("Test Shop");
-            shop.Gold.Should().Be(1000);
+            shop.Gold.Should().Be(700);
             shop.ItemList.Count().Should().Be(2);
         }
 
@@ -58,9 +58,11 @@ namespace RandomShopGen.Tests
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
             var addedItem = new Item("Item 3", ItemValue100, ItemType.Usable);
 
-            shop.AddItemToList(addedItem);
+            bool result = shop.AddItemToList(addedItem);
 
+            result.Should().BeTrue("the action of removing the item should have been successful.");
             shop.ItemList.Should().Contain(addedItem);
+            shop.Gold.Should().Be(600, "the gold value of Item 3 should have been removed from the 700 remaining gold of the shop when Item 3 was added.");
         }
 
         [TestMethod]
@@ -69,9 +71,36 @@ namespace RandomShopGen.Tests
         {
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
             
-            shop.RemoveItemFromList("Item 1");
+            bool result = shop.RemoveItemFromList("Item 1");
 
+            result.Should().BeTrue("the action of removing the item should have been successful.");
             shop.ItemList.Should().NotContain(x => x.Name == "Item 1");
+            shop.Gold.Should().Be(800, "the gold value of Item 1 should have been returned to the shops total gold when Item 1 was removed.");
+        }
+
+        [TestMethod]
+        [TestCategory("Shop")]
+        public void ShopShouldReturnFailResultWhenFailingToRemoveAnItem()
+        {
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
+
+            bool result = shop.RemoveItemFromList("No Item");
+
+            result.Should().BeFalse("RemoveItemFromList should not return true when it wasn't able to find an item in it's list of items");
+            shop.ItemList.Count().Should().Be(2, "no item should have been removed from the list since the item wasn't in the list in the first place.");
+        }
+
+        [TestMethod]
+        [TestCategory("Shop")]
+        public void ShopShouldReturnFailResultWhenItemCostsMoreThanItCanAfford()
+        {
+            var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
+            var expensiveItem = new Item(TestItem, 1000, ItemType.Key);
+
+            var result = shop.AddItemToList(expensiveItem);
+
+            result.Should().BeFalse("if the item costs more gold than the shop has available, it can't buy the item");
+            shop.ItemList.Should().NotContain(expensiveItem);
         }
 
         [TestMethod]

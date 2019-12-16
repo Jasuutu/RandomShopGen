@@ -1,4 +1,6 @@
-﻿namespace RandomShopGen.Lib
+﻿using System;
+
+namespace RandomShopGen.Lib
 {
     public class Item
     {
@@ -10,6 +12,7 @@
         /// <param name="itemType">Type of the item.</param>
         public Item(string name, int value, ItemType itemType)
         {
+            if(string.IsNullOrEmpty(name)) throw new ArgumentException(nameof(name));
             this.Name = name;
             this.Value = value;
             this.ItemType = itemType;
