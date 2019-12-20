@@ -1,22 +1,50 @@
 ﻿@page "/createshop"
+@using Newtonsoft.Json
 @using RandomShopGen.Lib
 
 <h1>Create Shop</h1>
 
 <h2>New Shop Entry Form</h2>
 
-<EditForm model="@newShop" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="form-group">
+    <EditForm Model="@newShop" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
+        <p>
+            <label for="ShopName">Shop Name: </label>
+            <InputText id="ShopName" @bind-Value="newShop.ShopName" />
+        </p>
+        <p>
+            <label for="OwnerName">Owner Name: </label>
+            <InputText id="OwnerName" @bind-Value="newShop.OwnerName" />
+        </p>
+        <p>
+            <label for="StartingGold">Starting Gold: </label>
+            <InputNumber id="StartingGold" @bind-Value="newShop.StartingGold" />
+        </p>
+        <p>
+            <label for="Description">Description: </label>
+            <InputTextArea id="Description" @bind-Value="newShop.Description"/>
+        </p>
+        <p>
+            <button type="submit">Submit</button>
+        </p>
+    </EditForm>
 
-</EditForm>
+    <p>
+        <textarea @bind="@resultString" class="w-50"></textarea>
+    </p>
+</div>
 
 @code {
-    private CreateShopModel newShop;
+    private CreateShopModel newShop = new CreateShopModel();
+
+    private string resultString = string.Empty;
 
     private void HandleValidSubmit()
     {
-
+        resultString = JsonConvert.SerializeObject(newShop);
+        this.StateHasChanged();
     }
 }
