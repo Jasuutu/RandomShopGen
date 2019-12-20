@@ -1,0 +1,22 @@
+﻿@page "/createshop"
+@using RandomShopGen.Lib
+
+<h1>Create Shop</h1>
+
+<h2>New Shop Entry Form</h2>
+
+<EditForm model="@newShop" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+
+</EditForm>
+
+@code {
+    private CreateShopModel newShop;
+
+    private void HandleValidSubmit()
+    {
+
+    }
+}

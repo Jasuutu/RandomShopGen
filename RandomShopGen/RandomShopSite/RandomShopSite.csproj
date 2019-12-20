@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RandomShopGen.Lib\RandomShopGen.Lib.csproj" />
+  </ItemGroup>
+
 </Project>
