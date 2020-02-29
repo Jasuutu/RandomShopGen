@@ -8,7 +8,7 @@
 
 <div class="form-group">
     <EditForm Model="@newShop" OnValidSubmit="@HandleValidSubmit">
-        <DataAnnotationsValidator />
+        <ObjectGraphDataAnnotationsValidator />
         <ValidationSummary />
 
         <p>
@@ -25,8 +25,44 @@
         </p>
         <p>
             <label for="Description">Description: </label>
-            <InputTextArea id="Description" @bind-Value="newShop.Description"/>
+            <InputTextArea id="Description" @bind-Value="newShop.Description" />
         </p>
+
+        <button type="button" @onclick="HandleAddItem">Add Item</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"><b>Item Name*</b></th>
+                    <th scope="col"><b>Item Value*</b></th>
+                    <th scope="col"><b>Item Type*</b></th>
+                    <th scope="col">Item Tier</th>
+                    <th scope="col">Item Description</th>
+                    <th scope="col">Reference Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in newShop.Items)
+                {
+                    <tr>
+                        <td><InputText id="ItemName" @bind-Value="item.Name"/></td>
+                        <td><InputNumber id="ItemValuue" @bind-Value="item.Value"/></td>
+                        <td><InputSelect id="ItemType" @bind-Value="item.ItemType">
+                            <option value="@ItemType.Consumable">Consumable</option>
+                            <option value="@ItemType.Wearable">Wearable</option>
+                            <option value="@ItemType.Consumable">Consumable</option>
+                            <option value="@ItemType.Key">Key</option>
+                            <option value="@ItemType.Chargeable">Chargeable</option>
+                        </InputSelect></td>
+                        <td><InputNumber id="ItemTier" @bind-Value="item.ItemTier"/></td>
+                        <td><InputTextArea id="ItemDescription" @bind-Value="item.Description"/></td>
+                        <td><InputText id="ReferenceLocation" @bind-Value="item.ReferenceLocation"/></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+                
+
+
         <p>
             <button type="submit">Submit</button>
         </p>
@@ -45,6 +81,12 @@
     private void HandleValidSubmit()
     {
         resultString = JsonConvert.SerializeObject(newShop);
+        this.StateHasChanged();
+    }
+
+    private void HandleAddItem()
+    {
+        newShop.Items.Add(new Item());
         this.StateHasChanged();
     }
 }

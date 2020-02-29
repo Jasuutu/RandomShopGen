@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,10 +37,10 @@ namespace RandomShopGen.Tests
             var itemName = string.Empty;
             Item item = null;
 
-            Action act = () => { item = new Item(itemName, ItemValue100, ItemType.Usable); };
-
-            act.Should().Throw<ArgumentException>("an empty item name is not a valid value");
-            item.Should().BeNull("no item should be created when an invalid value is used.");
+            item = new Item(itemName, ItemValue100, ItemType.Usable);
+            
+            ValidateModel(item).Should().Contain(v => v.MemberNames.Contains("Name") &&
+                                                      v.ErrorMessage.Contains("required"));
         }
 
         [TestMethod]
@@ -115,6 +118,14 @@ namespace RandomShopGen.Tests
 
             itemsList.Items.Any().Should().BeTrue();
             itemsList.Items.FirstOrDefault().Should().NotBeNull();
+        }
+
+        private IList<ValidationResult> ValidateModel(object model)
+        {
+            var validationResults = new List<ValidationResult>();
+            var ctx = new ValidationContext(model, null, null);
+            Validator.TryValidateObject(model, ctx, validationResults, true);
+            return validationResults;
         }
     }
 }

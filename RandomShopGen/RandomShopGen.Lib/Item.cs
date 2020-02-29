@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace RandomShopGen.Lib
 {
@@ -12,10 +13,15 @@ namespace RandomShopGen.Lib
         /// <param name="itemType">Type of the item.</param>
         public Item(string name, int value, ItemType itemType)
         {
-            if(string.IsNullOrEmpty(name)) throw new ArgumentException(nameof(name));
+            //if(string.IsNullOrEmpty(name)) throw new ArgumentException(nameof(name));
             this.Name = name;
             this.Value = value;
             this.ItemType = itemType;
+        }
+
+        public Item()
+        {
+            Name = string.Empty;
         }
 
         /// <summary>
@@ -24,7 +30,8 @@ namespace RandomShopGen.Lib
         /// <value>
         /// The name.
         /// </value>
-        public string Name { get; }
+        [Required]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the value.
@@ -32,7 +39,9 @@ namespace RandomShopGen.Lib
         /// <value>
         /// The value.
         /// </value>
-        public int Value { get; }
+        [Required]
+        [Range(1, 100000, ErrorMessage = "Valid gold range: 1 - 100000")]
+        public int Value { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the item.
@@ -40,6 +49,7 @@ namespace RandomShopGen.Lib
         /// <value>
         /// The type of the item.
         /// </value>
+        [ItemTypeRequired]
         public ItemType ItemType { get; set; }
 
         /// <summary>
@@ -48,6 +58,7 @@ namespace RandomShopGen.Lib
         /// <value>
         /// The item tier.
         /// </value>
+        [Range(1, 10, ErrorMessage = "Valid Item Tier range: 1 - 10")]
         public int? ItemTier { get; set; }
 
         /// <summary>
