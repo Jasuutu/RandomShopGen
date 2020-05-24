@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -114,10 +113,10 @@ namespace RandomShopGen.Tests
             var filePath = @"c:\TestItems.json";
             var extractor = new ItemsExtractor();
 
-            var itemsList = extractor.ConvertFileToItemsCollection(filePath);
+            var itemsList = extractor.ConvertFileToItemsCollection(filePath).ToList();
 
-            itemsList.Items.Any().Should().BeTrue();
-            itemsList.Items.FirstOrDefault().Should().NotBeNull();
+            itemsList.Any().Should().BeTrue();
+            itemsList.FirstOrDefault().Should().NotBeNull();
         }
 
         private IList<ValidationResult> ValidateModel(object model)
