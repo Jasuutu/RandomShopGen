@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using RandomShopGen.Lib;
+using RandomShopGen.Lib.Models;
 
 namespace RandomShopGen.Tests.TestData
 {

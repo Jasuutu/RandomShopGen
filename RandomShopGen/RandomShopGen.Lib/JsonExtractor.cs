@@ -2,6 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 using RandomShopGen.Lib.Interfaces;
+using RandomShopGen.Lib.Models;
 
 namespace RandomShopGen.Lib
 {

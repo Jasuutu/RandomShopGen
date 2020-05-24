@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RandomShopGen.Lib.Models;
 
 namespace RandomShopGen.Lib.Interfaces
 {

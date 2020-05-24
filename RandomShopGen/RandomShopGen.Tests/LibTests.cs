@@ -5,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using RandomShopGen.Lib;
+using RandomShopGen.Lib.Models;
 using RandomShopGen.Tests.Mocks;
 using RandomShopGen.Tests.TestData;
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using RandomShopGen.Lib.Models;
 
 namespace RandomShopGen.Lib
 {
@@ -16,7 +17,7 @@ namespace RandomShopGen.Lib
 
     public class ListCountMinAttribute : ValidationAttribute
     {
-        private int minCount;
+        private readonly int minCount;
 
         public ListCountMinAttribute(int minCount)
         {

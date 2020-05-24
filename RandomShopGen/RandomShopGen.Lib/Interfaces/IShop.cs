@@ -1,4 +1,6 @@
-﻿namespace RandomShopGen.Lib.Interfaces
+﻿using RandomShopGen.Lib.Models;
+
+namespace RandomShopGen.Lib.Interfaces
 {
     public interface IShop
     {
