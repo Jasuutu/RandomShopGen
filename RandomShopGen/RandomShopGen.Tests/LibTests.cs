@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using RandomShopGen.Lib;
 using RandomShopGen.Lib.Models;
@@ -17,7 +18,6 @@ namespace RandomShopGen.Tests
         private const string TestItem = "Test Item";
         private const string TestShop = "Test Shop";
         private const string TestOwner = "TestOwner";
-        private const string ValidFilePath = "C:\\testPath";
         private const int ItemValue100 = 100;
         private const int ShopGold1000 = 1000;
         private const string LongString = "bmpynpibcxyfhcbrxyosaivthjdrpooibjlfirsykubvkmoyxfqynftfhmedknpdlkvjpepugmhvthigcrbwbitbdpgkmgnplnedvqgnpbqstqvgdnzlpcqircixcpawfcrtbfpmchralzadiyxhfskbgbrtcjuyflbrgiebrgaxbptuumiktldxnusijbbpvxhwfousarefarfkigfqbggsztiqwdunbyfkzk";
@@ -116,7 +116,7 @@ namespace RandomShopGen.Tests
         {
             var shopRequest = new ShopRequest(new MemoryItemExtractor())
             {
-                ShopName = null, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemsFilePath = ValidFilePath
+                ShopName = null, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemString = ItemData.ItemListJsonString
             };
 
             ValidateModel(shopRequest).Should().Contain(v => v.MemberNames.Contains("ShopName") &&
@@ -138,7 +138,7 @@ namespace RandomShopGen.Tests
         {
             var shopRequest = new ShopRequest(new MemoryItemExtractor())
             {
-                ShopName = TestShop, OwnerName = null, StartingGold = ShopGold1000, ItemsFilePath = ValidFilePath
+                ShopName = TestShop, OwnerName = null, StartingGold = ShopGold1000, ItemString = ItemData.ItemListJsonString
             };
 
             ValidateModel(shopRequest).Should().Contain(v => v.MemberNames.Contains("OwnerName") &&
@@ -160,10 +160,27 @@ namespace RandomShopGen.Tests
         {
             var shopRequest = new ShopRequest(new MemoryItemExtractor())
             {
-                ShopName = TestShop, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemsFilePath = ValidFilePath
+                ShopName = TestShop, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemString = ItemData.ItemListJsonString
             };
 
             shopRequest.BuildShopFromRequest().Should().NotBeNull("because ShopRequests should return shops.");
+        }
+
+        [Test]
+        [Category(nameof(ShopRequest))]
+        public void BuildingAShopThrowErrorWhenInputIsInvalid()
+        {
+            var shopRequest = new ShopRequest(new JsonExtractor())
+            {
+                ShopName = TestShop, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemString = "InvalidJson"
+            };
+
+            shopRequest.Invoking(sr => sr.BuildShopFromRequest())
+                .Should().ThrowExactly<JsonReaderException>("because invalid json can't be parsed.");
+
+            shopRequest.ItemString = "[]";
+            shopRequest.Invoking(sr => sr.BuildShopFromRequest())
+                .Should().ThrowExactly<InvalidOperationException>("because invalid json can't be parsed.");
         }
 
         [Test]
@@ -171,10 +188,9 @@ namespace RandomShopGen.Tests
         [Category("LocalOnly")]
         public void ItemExtractorShouldReadTestFileCorrectly()
         {
-            var filePath = @"c:\TestItems.json";
             var extractor = new JsonExtractor();
 
-            var itemsList = extractor.ConvertFileToItemsCollection(filePath).ToList();
+            var itemsList = extractor.ConvertFileToItemsCollection(ItemData.ItemListJsonString).ToList();
 
             itemsList.Any().Should().BeTrue();
             itemsList.FirstOrDefault().Should().NotBeNull();

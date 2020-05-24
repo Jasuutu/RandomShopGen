@@ -2,6 +2,7 @@
 @using Newtonsoft.Json
 @using RandomShopGen.Lib
 @using RandomShopGen.Lib.Models
+@using System.IO
 
 <h1>Create Shop</h1>
 
@@ -29,6 +30,22 @@
             <InputTextArea id="Description" @bind-Value="newShop.Description" />
         </p>
 
+        <p>
+            <InputFile OnChange="HandleFileSelected" />
+        </p>
+
+        @if (file != null)
+        {
+            <p>Name: @file.Name</p>
+            <p>Size in bytes: @file.Size</p>
+            <p>Last modified date: @file.LastModified.ToShortDateString()</p>
+            <p>Content type (not always supplied by the browser): @file.Type</p>
+            <button @onclick="ReadFile">ReadFile</button>
+            @if (shop != null)
+            {
+                <p>Shop Name: @shop.Name</p>
+            }
+        }
         @*<button type="button" @onclick="HandleAddItem">Add Item</button>
         <table class="table">
             <thead>
@@ -61,7 +78,7 @@
                 }
             </tbody>
         </table>*@
-                
+
 
 
         <p>
@@ -75,9 +92,11 @@
 </div>
 
 @code {
-    private ShopRequest newShop = new ShopRequest(new JsonExtractor());
+    private readonly ShopRequest newShop = new ShopRequest(new JsonExtractor());
 
     private string resultString = string.Empty;
+    private IFileListEntry file;
+    private Shop shop;
 
     private void HandleValidSubmit()
     {
@@ -89,5 +108,25 @@
     {
         //newShop.Items.Add(new Item());
         this.StateHasChanged();
+    }
+
+    private void HandleFileSelected(IFileListEntry[] files)
+    {
+        file = files.FirstOrDefault();
+    }
+
+    private async Task ReadFile()
+    {
+        string fileData = string.Empty;
+        using (var reader = new StreamReader(file.Data))
+        {
+            fileData = await reader.ReadToEndAsync();
+        }
+
+        if (!string.IsNullOrEmpty(fileData))
+        {
+            newShop.ItemString = fileData;
+            shop = newShop.BuildShopFromRequest();
+        }
     }
 }
