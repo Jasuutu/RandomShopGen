@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RandomShopGen.Lib", "Random
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RandomShopGen.Tests", "RandomShopGen.Tests\RandomShopGen.Tests.csproj", "{001612B6-7454-4AA0-8D41-84181401B162}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomShopSite", "RandomShopSite\RandomShopSite.csproj", "{CF54945F-0D45-4252-B347-9A00F7DE6AC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RandomShopSite", "RandomShopSite\RandomShopSite.csproj", "{CF54945F-0D45-4252-B347-9A00F7DE6AC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

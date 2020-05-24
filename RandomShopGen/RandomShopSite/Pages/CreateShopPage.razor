@@ -28,7 +28,7 @@
             <InputTextArea id="Description" @bind-Value="newShop.Description" />
         </p>
 
-        <button type="button" @onclick="HandleAddItem">Add Item</button>
+        @*<button type="button" @onclick="HandleAddItem">Add Item</button>
         <table class="table">
             <thead>
                 <tr>
@@ -59,7 +59,7 @@
                     </tr>
                 }
             </tbody>
-        </table>
+        </table>*@
                 
 
 
@@ -74,7 +74,7 @@
 </div>
 
 @code {
-    private CreateShopModel newShop = new CreateShopModel();
+    private ShopRequest newShop = new ShopRequest(new JsonExtractor());
 
     private string resultString = string.Empty;
 
@@ -86,7 +86,7 @@
 
     private void HandleAddItem()
     {
-        newShop.Items.Add(new Item());
+        //newShop.Items.Add(new Item());
         this.StateHasChanged();
     }
 }

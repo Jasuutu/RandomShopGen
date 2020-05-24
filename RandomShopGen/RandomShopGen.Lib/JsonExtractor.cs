@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using RandomShopGen.Lib.Interfaces;
 
 namespace RandomShopGen.Lib
 {
-    public class ItemsExtractor
+    public class JsonExtractor : IItemsExtractor
     {
         public IEnumerable<Item> ConvertFileToItemsCollection(string filePath)
         {

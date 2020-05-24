@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using RandomShopGen.Lib;
+using RandomShopGen.Tests.Mocks;
 using RandomShopGen.Tests.TestData;
 
 namespace RandomShopGen.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class LibTests
     {
         private const string TestItem = "Test Item";
         private const string TestShop = "Test Shop";
+        private const string TestOwner = "TestOwner";
+        private const string ValidFilePath = "C:\\testPath";
         private const int ItemValue100 = 100;
         private const int ShopGold1000 = 1000;
+        private const string LongString = "bmpynpibcxyfhcbrxyosaivthjdrpooibjlfirsykubvkmoyxfqynftfhmedknpdlkvjpepugmhvthigcrbwbitbdpgkmgnplnedvqgnpbqstqvgdnzlpcqircixcpawfcrtbfpmchralzadiyxhfskbgbrtcjuyflbrgiebrgaxbptuumiktldxnusijbbpvxhwfousarefarfkigfqbggsztiqwdunbyfkzk";
 
-        [TestMethod]
-        [TestCategory("Item")]
+        [Test]
+        [Category("Item")]
         public void ItemWillNotThrowExceptionWhenGivenProperValues()
         {
             Item item = null;
@@ -29,8 +33,8 @@ namespace RandomShopGen.Tests
             item.Should().NotBeNull("item should have been constructed correctly.");
         }
 
-        [TestMethod]
-        [TestCategory("Item")]
+        [Test]
+        [Category("Item")]
         public void ItemWillThrowExceptionWhenGivenIncorrectValues()
         {
             var itemName = string.Empty;
@@ -42,8 +46,8 @@ namespace RandomShopGen.Tests
                                                       v.ErrorMessage.Contains("required"));
         }
 
-        [TestMethod]
-        [TestCategory("Shop")]
+        [Test]
+        [Category("Shop")]
         public void ShopShouldHaveNameWhenValidValuesAreProvided()
         {
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
@@ -53,8 +57,8 @@ namespace RandomShopGen.Tests
             shop.ItemList.Count().Should().Be(2);
         }
 
-        [TestMethod]
-        [TestCategory("Shop")]
+        [Test]
+        [Category("Shop")]
         public void ShopShouldBeAbleToAddItemToList()
         {
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
@@ -67,8 +71,8 @@ namespace RandomShopGen.Tests
             shop.Gold.Should().Be(600, "the gold value of Item 3 should have been removed from the 700 remaining gold of the shop when Item 3 was added.");
         }
 
-        [TestMethod]
-        [TestCategory("Shop")]
+        [Test]
+        [Category("Shop")]
         public void ShopShouldBeAbleToRemoveAnItemFromList()
         {
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
@@ -80,8 +84,8 @@ namespace RandomShopGen.Tests
             shop.Gold.Should().Be(800, "the gold value of Item 1 should have been returned to the shops total gold when Item 1 was removed.");
         }
 
-        [TestMethod]
-        [TestCategory("Shop")]
+        [Test]
+        [Category("Shop")]
         public void ShopShouldReturnFailResultWhenFailingToRemoveAnItem()
         {
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
@@ -92,8 +96,8 @@ namespace RandomShopGen.Tests
             shop.ItemList.Count().Should().Be(2, "no item should have been removed from the list since the item wasn't in the list in the first place.");
         }
 
-        [TestMethod]
-        [TestCategory("Shop")]
+        [Test]
+        [Category("Shop")]
         public void ShopShouldReturnFailResultWhenItemCostsMoreThanItCanAfford()
         {
             var shop = new Shop(TestShop, ShopGold1000, ItemData.BasicItemList);
@@ -105,13 +109,69 @@ namespace RandomShopGen.Tests
             shop.ItemList.Should().NotContain(expensiveItem);
         }
 
-        [TestMethod]
-        [TestCategory("JsonConversion")]
-        [TestCategory("LocalOnly")]
+        [Test]
+        [Category(nameof(ShopRequest))]
+        public void ShopRequestShouldValidateShopNameIsValid()
+        {
+            var shopRequest = new ShopRequest(new MemoryItemExtractor())
+            {
+                ShopName = null, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemsFilePath = ValidFilePath
+            };
+
+            ValidateModel(shopRequest).Should().Contain(v => v.MemberNames.Contains("ShopName") &&
+                                                                       v.ErrorMessage.Contains("required"));
+
+            shopRequest.ShopName = LongString;
+
+            ValidateModel(shopRequest).Should().Contain(v => v.MemberNames.Contains("ShopName") &&
+                                                             v.ErrorMessage.Contains("ShopName can't be longer than 64 characters."));
+
+            shopRequest.ShopName = TestShop;
+
+            ValidateModel(shopRequest).Should().BeEmpty("because a valid ShopRequest should throw no errors");
+        }
+
+        [Test]
+        [Category(nameof(ShopRequest))]
+        public void ShopRequestShouldValidateShopOwnerIsValid()
+        {
+            var shopRequest = new ShopRequest(new MemoryItemExtractor())
+            {
+                ShopName = TestShop, OwnerName = null, StartingGold = ShopGold1000, ItemsFilePath = ValidFilePath
+            };
+
+            ValidateModel(shopRequest).Should().Contain(v => v.MemberNames.Contains("OwnerName") &&
+                                                             v.ErrorMessage.Contains("required"));
+
+            shopRequest.OwnerName = LongString;
+
+            ValidateModel(shopRequest).Should().Contain(v => v.MemberNames.Contains("OwnerName") &&
+                                                             v.ErrorMessage.Contains("OwnerName can't be longer than 64 characters."));
+
+            shopRequest.OwnerName = TestShop;
+
+            ValidateModel(shopRequest).Should().BeEmpty("because a valid ShopRequest should throw no errors");
+        }
+
+        [Test]
+        [Category(nameof(ShopRequest))]
+        public void ShopRequestBuildShopShouldReturnShop()
+        {
+            var shopRequest = new ShopRequest(new MemoryItemExtractor())
+            {
+                ShopName = TestShop, OwnerName = TestOwner, StartingGold = ShopGold1000, ItemsFilePath = ValidFilePath
+            };
+
+            shopRequest.BuildShopFromRequest().Should().NotBeNull("because ShopRequests should return shops.");
+        }
+
+        [Test]
+        [Category("JsonConversion")]
+        [Category("LocalOnly")]
         public void ItemExtractorShouldReadTestFileCorrectly()
         {
             var filePath = @"c:\TestItems.json";
-            var extractor = new ItemsExtractor();
+            var extractor = new JsonExtractor();
 
             var itemsList = extractor.ConvertFileToItemsCollection(filePath).ToList();
 
