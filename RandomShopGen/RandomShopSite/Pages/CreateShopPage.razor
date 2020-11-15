@@ -1,8 +1,8 @@
 ﻿@page "/createshop"
-@using Newtonsoft.Json
 @using RandomShopGen.Lib
 @using RandomShopGen.Lib.Models
-@using System.IO
+@using System.Text
+@using System.Text.Json
 
 <h1>Create Shop</h1>
 
@@ -10,7 +10,7 @@
 
 <div class="form-group">
     <EditForm Model="@newShop" OnValidSubmit="@HandleValidSubmit">
-        <ObjectGraphDataAnnotationsValidator />
+        <DataAnnotationsValidator />
         <ValidationSummary />
 
         <p>
@@ -38,8 +38,8 @@
         {
             <p>Name: @file.Name</p>
             <p>Size in bytes: @file.Size</p>
-            <p>Last modified date: @file.LastModified.ToShortDateString()</p>
-            <p>Content type (not always supplied by the browser): @file.Type</p>
+            <p>Last modified date: @file.LastModified.ToString()</p>
+            <p>Content type (not always supplied by the browser): @file.ContentType</p>
             <button @onclick="ReadFile">ReadFile</button>
             @if (shop != null)
             {
@@ -95,12 +95,15 @@
     private readonly ShopRequest newShop = new ShopRequest(new JsonExtractor());
 
     private string resultString = string.Empty;
-    private IFileListEntry file;
+    private IBrowserFile file;
     private Shop shop;
 
     private void HandleValidSubmit()
     {
-        resultString = JsonConvert.SerializeObject(newShop);
+        if (shop != null)
+        {
+            resultString = JsonSerializer.Serialize<Shop>(shop);
+        }
         this.StateHasChanged();
     }
 
@@ -110,17 +113,21 @@
         this.StateHasChanged();
     }
 
-    private void HandleFileSelected(IFileListEntry[] files)
+    private void HandleFileSelected(InputFileChangeEventArgs e)
     {
-        file = files.FirstOrDefault();
+        file = e.File;
     }
 
     private async Task ReadFile()
     {
+        var format = "application/json";
         string fileData = string.Empty;
-        using (var reader = new StreamReader(file.Data))
+
+        if (file.ContentType == format)
         {
-            fileData = await reader.ReadToEndAsync();
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            fileData = $"{Encoding.UTF8.GetString(buffer, 0, buffer.Length)}";
         }
 
         if (!string.IsNullOrEmpty(fileData))

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 using RandomShopGen.Lib.Interfaces;
 using RandomShopGen.Lib.Models;
 
@@ -9,7 +9,7 @@ namespace RandomShopGen.Lib
     {
         public IEnumerable<Item> ConvertFileToItemsCollection(string itemString)
         {
-            return JsonConvert.DeserializeObject<IEnumerable<Item>>(itemString);
+            return JsonSerializer.Deserialize<IEnumerable<Item>>(itemString);
         }
     }
 }
